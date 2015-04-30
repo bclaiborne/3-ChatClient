@@ -1,10 +1,13 @@
 require 'socket'
+require_relative 's_commands.rb'
 
-server = TCPServer.new 2000 # Server bound to port 2000
+
+users = UserList.new()
 
 loop do
   client = server.accept    # Wait for a client to connect
-  client.puts "Hello !"
-  client.puts "Time is #{Time.now}"
-  client.close
+	connect()
+#  client.puts "Hello !"
+#  client.puts "Time is #{Time.now}"
 end
+

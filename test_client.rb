@@ -1,9 +1,17 @@
 require 'socket'
+require_relative 'c_commands.rb'
 
-s = TCPSocket.new 'localhost', 2000
+soc = TCPSocket.new 'localhost', 2000
+#Connect to server
+#-Pass Username
+#-On CONNECTED response, enter chat mode.
+puts "SAY SOMETHING!!"
+inp = $stdin.read
+puts inp
 
-while line = s.gets # Read lines from socket
-  puts line         # and print them
-end
+#while line = soc.gets # Read lines from socket
+#  puts line         # and print them
+#end
 
-s.close             # close socket when done
+#loop do
+#end
