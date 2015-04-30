@@ -1,13 +1,17 @@
 require 'socket'
 require_relative 's_commands.rb'
 
+server = Server.new
 
-users = UserList.new()
 
 loop do
-  client = server.accept    # Wait for a client to connect
-	connect()
-#  client.puts "Hello !"
-#  client.puts "Time is #{Time.now}"
+  Thread.start(server.socket.accept) do |client|    # Wait for a client to connect
+	  loop do
+		  command = client.gets
+		  client.puts connect(command.strip)
+		  client.puts command
+	  end
+  end
 end
 
+#TCP Server ThreadThreadThread

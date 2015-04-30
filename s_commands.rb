@@ -1,9 +1,11 @@
 
 class Server
-	attr_accessor :socket
+	attr_accessor :socket, :users
 	
-	socket = TCPServer.new 2000 # Server bound to port 2000
-
+	def initialize
+		@socket = TCPServer.new 2000 # Server bound to port 2000
+		@users = UserList.new()
+	end
 end
 class UserList
 	attr_accessor :users
@@ -24,11 +26,12 @@ class UserList
 		@users.delete(target)
 	end
 end
-def connect
-	if command == CONNECT
-		client.puts "CONNECTED"
+
+def connect(command)
+	if command == "CONNECT"
+		return "CONNECTED"
 	else 
-		client.puts "FAILED"
+		return "FAILED"
 	end
 end
 def broadcast
@@ -37,6 +40,7 @@ end
 def send(username, message)
 	if username
 	client.puts "SENT"
+	end
 end
 def users
 	client.puts "USERS #{user_list}"
