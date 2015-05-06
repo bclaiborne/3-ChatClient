@@ -8,9 +8,10 @@ loop do
 	Thread.start(server.socket.accept) do |client|    # Wait for a client to connect
 		loop do
 			#Get a message
-			
+			msg = client.gets
+			puts msg
 			#Parse and return the server message
-			response = server.parse(client)
+			response = server.parse(msg, client)
 			client.puts response
 			if response == "DISCONNECTED"
 				#close the socket.
@@ -19,4 +20,7 @@ loop do
 			end
 		end
 	end
+	#Send Messages to all connected users.
+	
+	#loop through all open threads to send
 end
