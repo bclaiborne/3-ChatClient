@@ -15,12 +15,11 @@ class Server
 				puts "connect request"
 				response = "You are already connected."
 			when "BROADCAST"
-				puts "broadcast request"
-                #get rid of the command.
+				puts "Broadcast Request"
 				response = broadcast(tokens)
 			when "SEND"
-				puts "send request"
-				response = send(tokens[1], tokens[2])
+				puts "Send Request"
+				response = send(tokens)
 			when "USERLIST"
 				puts "userlist request"
 				response = userListing()
@@ -47,26 +46,27 @@ class Server
 		#notify sent.
 		return "SENT"
 	end
-	def send(username, message)
-		#Loop to find user.
-        @user_list.each do |each|
-            username = each.name
-            socket = each.socket
-			#send message to socket.
-            if username
-                socket.puts message
+	def send(tokens)
+        target_user = tokens[1]
+        #THIS IS DUCK TYPING
+        #Isolate the message.
+        tokens.shift(2).join(" ")
+        #find user
+        @user_list.each do |usr|
+			#send message to target socket.
+            if usr[:name] == target_user
+                usr[:sock].puts tokens
                 return "SENT"
-            else
-                return "FAILED"
             end
         end
+        return "FAILED"
 	end
 	def userListing()
 		#build the list.
 		all_users = ""
         puts "Start listing.."
-		@user_list.each {|sock|
-            all_users = all_users + ", " + sock[:name] 
+		@user_list.each {|usr|
+            all_users = all_users + ", " + usr[:name] 
 		}
 		return "USERS:#{all_users}"
 	end
