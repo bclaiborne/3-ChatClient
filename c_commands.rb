@@ -1,4 +1,4 @@
-def Client
+class Client
     #Remember the two threads and the server we are talking to.
     @outgoing
     @incoming
@@ -6,8 +6,10 @@ def Client
     
     def initialize(server)
         @server = server
-        get
-        send
+        #Incoming thread function.
+        get()
+        #Outgoing thread function.
+        send()
         @outgoing.join
         @incoming.join
     end
@@ -17,9 +19,8 @@ def Client
             loop do
                 #Write stuff
                 message = $stdin.gets.chomp
-                @server.puts(message)
-                #read the stuff
                 #send the stuff
+                @server.puts(message)
             end
         end
     end

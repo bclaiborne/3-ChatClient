@@ -1,10 +1,12 @@
 class Server
 	attr_accessor :socket, :users
 	
+    #Start the server.
 	def initialize
 		@socket = TCPServer.new 2000 # Server bound to port 2000
 		@user_list = []
 	end
+    #Switch on command. Connect and Disconnect commands are dealt with in the server loop.
 	def parse(msg)
 		#Pull the message out
 		#message = msg
@@ -21,7 +23,7 @@ class Server
 				puts "Send Request"
 				response = send(tokens)
 			when "USERLIST"
-				puts "userlist request"
+				puts "Userlist Request"
 				response = userListing()
 			else
 			response = "I don't know what #{tokens[0]} means." 
@@ -32,7 +34,6 @@ class Server
 	def connect(usr_name, client)
         user = {name: usr_name, sock: client}
         #Add the user and its connection to the userList
-        puts user
         @user_list.push(user)
 	end
 	def broadcast(message)
@@ -66,15 +67,20 @@ class Server
 		all_users = ""
         puts "Start listing.."
 		@user_list.each {|usr|
-            all_users = all_users + ", " + usr[:name] 
+            all_users = all_users + usr[:name] + ", " 
 		}
 		return "USERS:#{all_users}"
 	end
 	def disconn(client)
-		#remove user from list.
-		@user_list.del_user(client)
-		#respond disconnected.
-		return "DISCONNECTED"
+		#Find the user.
+        puts client
+		@user_list.each do |usr|
+            if usr[:sock] == client
+                #Delete the user from the list.
+                @user_list.slice!(@user_list.index(usr))
+                return "DISCONNECTED"
+            end
+        end
 	end
 end
 

@@ -9,6 +9,7 @@ loop do
         puts "Incoming Connection..."
         #Tokenize the incoming message.
         data = client.gets.split(" ")
+        #Get the username.
         screen_name = data[1].strip
         #Reject illegal connections
         if data[0].strip != "CONNECT"
@@ -23,11 +24,11 @@ loop do
         loop do
 			#Get a message
 			msg = client.gets
-			puts "Message Received"
+
 			if msg.strip == "DISCONNECT"
-				puts "discon request"
-                client.puts "DISCONNECTED"
-                server.del_user(client)
+				puts "Discon Request"
+                response = server.disconn(client)
+                client.puts response
                 client.close
                 Thread.kill self
             end
