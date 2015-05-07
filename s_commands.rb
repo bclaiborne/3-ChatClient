@@ -3,105 +3,78 @@ class Server
 	
 	def initialize
 		@socket = TCPServer.new 2000 # Server bound to port 2000
-		@users = UserList.new()
+		@user_list = []
 	end
-	def parse(msg, client)
+	def parse(msg)
 		#Pull the message out
 		#message = msg
 		tokens = msg.strip.split(" ")
 		command = tokens[0].strip
-puts command
 		case command
 			when "CONNECT"
 				puts "connect request"
-				response = connect(tokens[1], client)
+				response = "You are already connected."
 			when "BROADCAST"
 				puts "broadcast request"
-				response = broadcast(tokens[1])
+                #get rid of the command.
+				response = broadcast(tokens)
 			when "SEND"
 				puts "send request"
 				response = send(tokens[1], tokens[2])
 			when "USERLIST"
 				puts "userlist request"
-				response = userlisting()
-			when "DISCONNECT"
-				puts "discon request"
-			#need to figur out how to grab the user.
-				response = disconn(client)
+				response = userListing()
 			else
 			response = "I don't know what #{tokens[0]} means." 
-#				Useful commands:
-#				CONNECT username | 
-#				BROADCAST message_line | 
-#				SEND username message_line |
-#				USERLIST |
-#				DISCONNECT." */
 		end
+        puts response
 		return response
 	end
 	def connect(usr_name, client)
-		#add them to the user list
-		@users.add_user(usr_name, client)
-		#reply connected.
-		return "CONNECTED"
+        user = {name: usr_name, sock: client}
+        #Add the user and its connection to the userList
+        puts user
+        @user_list.push(user)
 	end
 	def broadcast(message)
-		#Loop through users and send the message to every socket.
-		@users.list.each do |each|
-			each.client.puts message
+        #Remove the leading command and join with spaces.
+        message.shift.join(" ")
+
+        #Loop through users and send the message to every socket.
+		@user_list.each do |each|
+			each[:sock].puts message
 		end
 		#notify sent.
 		return "SENT"
 	end
 	def send(username, message)
 		#Loop to find user.
+        @user_list.each do |each|
+            username = each.name
+            socket = each.socket
 			#send message to socket.
-		if username
-			return "SENT"
-		else
-			return "FAILED"
-		end
+            if username
+                socket.puts message
+                return "SENT"
+            else
+                return "FAILED"
+            end
+        end
 	end
-	def userlisting()
-		result = @users.list_users()
-		return "USERS #{result}"
+	def userListing()
+		#build the list.
+		all_users = ""
+        puts "Start listing.."
+		@user_list.each {|sock|
+            all_users = all_users + ", " + sock[:name] 
+		}
+		return "USERS:#{all_users}"
 	end
 	def disconn(client)
 		#remove user from list.
-		@users.del_user(client)
+		@user_list.del_user(client)
 		#respond disconnected.
 		return "DISCONNECTED"
 	end
-end #server end
-class UserList
-	@list
-	
-	def initialize
-		@list = []
-	end
-	def check_user(target)
-		@list.each do |usr|
-			return true if usr == target
-		end
-		false
-	end
-	def list_users()
-		#build the list.
-		all_users = ""
-		@list.each do |each|
-			all_users = all_users + each[1] + ", "
-		end
-		return all_users
-	end
-	def add_user(name, client)
-		connection = [name, client]
-		@list<<connection
-	end
-	def del_user(client)
-		@list.each do |target|
-			if target[1] = client
-				@list.delete(target)
-			end
-		end
-	end
 end
+

@@ -1,16 +1,37 @@
-
-def connect(my_name)
-	soc.send "CONNECT #{my_name}"
-end
-def broadcast(message)
-	soc.send "BROADCAST #{message}"
-end
-def send(username, message)
-	soc.send "SEND #{username} #{message}"
-end
-def users(user_list)
-	soc.send "USERS #{user_list}"
-end
-def dconn
-	soc.send "DISCONNECT"
+def Client
+    #Remember the two threads and the server we are talking to.
+    @outgoing
+    @incoming
+    @server
+    
+    def initialize(server)
+        @server = server
+        get
+        send
+        @outgoing.join
+        @incoming.join
+    end
+    def send
+        #Create an outgoing Thread to send messages
+        @outgoing = Thread.new do
+            loop do
+                #Write stuff
+                message = $stdin.gets.chomp
+                @server.puts(message)
+                #read the stuff
+                #send the stuff
+            end
+        end
+    end
+    def get
+        #Create an incoming thread to receive messages.
+        @incoming = Thread.new do
+            loop do
+                #listen for stuff
+                message = @server.gets.chomp
+                #display them in console.
+                puts message
+            end
+        end
+    end
 end
