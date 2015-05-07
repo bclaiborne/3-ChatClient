@@ -24,7 +24,7 @@ loop do
 			#Get a message
 			msg = client.gets
 			puts "Message Received"
-			if msg[0] == "DISCONNECT"
+			if msg.strip == "DISCONNECT"
 				puts "discon request"
                 client.puts "DISCONNECTED"
                 server.del_user(client)
