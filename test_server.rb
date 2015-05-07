@@ -17,13 +17,11 @@ loop do
                     puts "Discon Request"
                     #Respond from the disconnect
                     response = server.disconn(client)
-                    puts = response
                     #close the socket
                     client.close
                 else
                     #Parse and return the server message
                     response = server.parse(data, client)
-                    puts "My Response: " + response
                     client.puts response
                 end
             end

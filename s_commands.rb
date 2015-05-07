@@ -8,17 +8,15 @@ class Server
 	end
     #Switch on command. Disconnect command is dealt with in the server loop.
 	def parse(msg, sock)
-		#Pull the message out
-		#message = msg
-		tokens = msg
+		#Pull the name out
         if msg[1] !=nil
             screen_name = msg[1].strip
         end
+        #Pull the command
 		command = msg[0].strip
-        puts command
 		case command
 			when "CONNECT"
-				puts "connect request"
+				puts "Connection Request"
                 response = connect(screen_name, sock)
 			when "BROADCAST"
 				puts "Broadcast Request"
@@ -34,6 +32,7 @@ class Server
 		end
 		return response
 	end
+    #Adds a user and their socket to the UserList on valid connection.
 	def connect(usr_name, client)
         if usr_name
             user = {name: usr_name, sock: client}
@@ -44,9 +43,11 @@ class Server
             return "FAILED"
         end
 	end
+    #Broadcasts the message to all users.
 	def broadcast(message)
         #Remove the leading command and join with spaces.
         message.shift
+        #Join fails if it isn't an array with more than one value.
         if message.length > 1
             message.join(" ")
         end
@@ -55,14 +56,15 @@ class Server
 		@user_list.each do |each|
 			each[:sock].puts message
 		end
-		#notify sent.
+		#Notify sent.
 		return "SENT"
 	end
+    #Private Message Send to only one user.
 	def send(tokens)
         target_user = tokens[1]
-        #THIS IS DUCK TYPING
         #Isolate the message.
-        tokens.shift(2).join(" ")
+        tokens.shift(2).join(" ") #THIS IS DUCK TYPING an array to a string.
+
         #find user
         @user_list.each do |usr|
 			#send message to target socket.
@@ -73,6 +75,7 @@ class Server
         end
         return "FAILED"
 	end
+    #Returns a comma seperated list of connected users.
 	def userListing()
 		#build the list.
 		all_users = ""
@@ -82,6 +85,7 @@ class Server
 		}
 		return "USERS:#{all_users}"
 	end
+    #Kills the connection
 	def disconn(client)
 		#Find the user.
 		@user_list.each do |usr|
