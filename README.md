@@ -1,2 +1,2 @@
-# 3-ChatClient
+# ChatClient
 Simple Chat Client Impementation in Ruby
